@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+import time
 from typing import Any
 
 import httpx
@@ -56,6 +57,23 @@ def _fetch_callback_events() -> list[dict[str, Any]]:
         return response.json()
 
 
+def _wait_for_note_created_event(
+    previous_count: int,
+    timeout_seconds: float = 30.0,
+    poll_interval: float = 2.0,
+) -> dict[str, Any]:
+    """Espera activamente a que se reciba un nuevo evento `note-created`."""
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline:
+        events = _fetch_callback_events()
+        if len(events) > previous_count:
+            for event in reversed(events):
+                if event.get("type") == "note-created":
+                    return event
+        time.sleep(poll_interval)
+    raise TimeoutError("Timeout esperando el evento 'note-created'")
+
+
 def _fetch_latest_note() -> dict[str, Any]:
     with httpx.Client(base_url=FAKE_OSM_BASE_URL, timeout=10.0) as client:
         response = client.get("/api/0.6/notes.json")
@@ -73,6 +91,9 @@ def _write_log(filename: str, content: str) -> Path:
 
 
 def main() -> None:
+    existing_events = _fetch_callback_events()
+    baseline_event_count = len(existing_events)
+
     text_event = {
         "object": "whatsapp_business_account",
         "entry": [
@@ -146,15 +167,8 @@ def main() -> None:
     location_response = _send_to_adapter(location_event)
     print("Respuesta:", location_response)
 
-    print("[3/4] Consultando eventos de callback en fake OSM...")
-    events = _fetch_callback_events()
-    callback = next(
-        (event for event in events if event.get("type") == "note-created"),
-        None,
-    )
-    if not callback:
-        raise RuntimeError("No se encontró evento de callback 'note-created'")
-
+    print("[3/4] Esperando evento de callback 'note-created'...")
+    callback = _wait_for_note_created_event(baseline_event_count)
     note_id = callback.get("payload", {}).get("note_id")
     print("Callback OK. note_id:", note_id)
 
