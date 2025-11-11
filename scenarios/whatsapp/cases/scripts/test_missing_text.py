@@ -5,12 +5,17 @@ Caso End-to-End: ubicación sin texto → expiración por falta de texto.
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import httpx
 
+from tools.reporting import CaseResult, build_markdown_report
+
 ADAPTER_BASE_URL = os.environ.get("ADAPTER_BASE_URL", "http://localhost:8001")
+FAKE_OSM_BASE_URL = os.environ.get("FAKE_OSM_BASE_URL", "http://localhost:8080")
 LOG_DIR = Path(os.environ.get("LOG_DIR", "./logs"))
 
 TEST_USER_MSISDN = os.environ.get("TEST_USER_MSISDN", "573000000000")
@@ -27,7 +32,15 @@ def _send_to_adapter(payload: dict) -> dict:
         return response.json()
 
 
+def _fetch_callback_events() -> list[dict[str, Any]]:
+    with httpx.Client(base_url=FAKE_OSM_BASE_URL, timeout=10.0) as client:
+        response = client.get("/__control__/events")
+        response.raise_for_status()
+        return response.json()
+
+
 def main() -> None:
+    baseline_events = len(_fetch_callback_events())
     location_event = {
         "object": "whatsapp_business_account",
         "entry": [
@@ -62,21 +75,43 @@ def main() -> None:
         ],
     }
 
-    print("[1/2] Enviando ubicación sin texto...")
+    print("[1/3] Enviando ubicación sin texto...")
     response = _send_to_adapter(location_event)
     print("Respuesta:", response)
 
-    log_content = f"Ubicación sin texto:\n{response}\n"
+    print("[2/3] Esperando 25 segundos para validar expiración...")
+    time.sleep(25)
+
+    events = _fetch_callback_events()
+    created_events = [
+        event for event in events if event.get("type") == "note-created"
+    ]
+    if len(events) > baseline_events:
+        raise AssertionError(
+            "Se registró una nota a pesar de faltar el texto. Eventos: "
+            f"{created_events}",
+        )
+
+    log_content = f"Ubicación sin texto:\n{response}\nEventos:\n{events}\n"
     timestamp = datetime.now().isoformat()
-    (LOG_DIR / f"whatsapp_missing_text_{timestamp}.log").write_text(
-        log_content,
-        encoding="utf-8",
+    log_path = LOG_DIR / f"whatsapp_missing_text_{timestamp}.log"
+    log_path.write_text(log_content, encoding="utf-8")
+
+    report_path = build_markdown_report(
+        [
+            CaseResult(
+                name="Expiración sin texto",
+                status="OK",
+                details=str(log_path),
+            ),
+        ],
+        output_dir=Path("reports/whatsapp"),
+        filename_prefix="whatsapp_missing_text",
     )
 
-    print(
-        "[2/2] Esperar >20 segundos y verificar que el adaptador descarte la sesión. "
-        "Revisar logs/respuestas del adaptador para confirmarlo.",
-    )
+    print("✅ Caso sin texto verificado (no se creó nota).")
+    print(f"📄 Registro: {log_path}")
+    print(f"📝 Reporte: {report_path}")
 
 
 if __name__ == "__main__":
