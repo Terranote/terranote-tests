@@ -35,7 +35,9 @@ def build_markdown_report(
         lines.append(f"| {result.name} | {result.status} | {details} |")
 
     output_path.write_text("\n".join(lines), encoding="utf-8")
-    (output_dir / "latest.md").write_text("\n".join(lines), encoding="utf-8")
+    latest_path = output_dir / "latest.md"
+    latest_path.write_text("\n".join(lines), encoding="utf-8")
+    consolidate_reports(output_dir, output_dir / "summary.md")
     return output_path
 
 

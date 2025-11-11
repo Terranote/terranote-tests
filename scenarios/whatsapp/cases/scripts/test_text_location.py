@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.reporting import CaseResult, build_markdown_report  # noqa: E402
+from tools.reporting import CaseResult, build_markdown_report, consolidate_reports  # noqa: E402
 
 CORE_BASE_URL = os.environ.get("CORE_BASE_URL", "http://localhost:8000")
 ADAPTER_BASE_URL = os.environ.get("ADAPTER_BASE_URL", "http://localhost:8001")
@@ -200,6 +200,7 @@ def main() -> None:
         output_dir=Path("reports/whatsapp"),
         filename_prefix="whatsapp_text_location",
     )
+    consolidate_reports(Path("reports/whatsapp"), Path("reports/whatsapp/summary.md"))
 
     print("✅ Caso texto + ubicación verificado correctamente.")
     print(f"📄 Registro almacenado en {log_path}")
