@@ -15,12 +15,14 @@ Script sugerido: `scripts/test_text_location.py`
 - Enviar solo texto y no enviar ubicación.
 - Esperar > 20 segundos y comprobar que el adaptador notifica al usuario que se requiere la ubicación (en fases siguientes).
 - Verificar que no se crea nota.
+- Script sugerido: `scripts/test_missing_location.py`
 
 ## Caso 3: Expiración por falta de texto
 
 - Enviar únicamente la ubicación y no añadir texto.
 - Esperar > 20 segundos y revisar la respuesta del adaptador (mensaje al usuario indicando que falta texto).
 - Confirmar que no se crea nota.
+- Script sugerido: `scripts/test_missing_text.py`
 
 ## Caso 4: Reintento con nueva sesión
 
