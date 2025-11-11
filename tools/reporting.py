@@ -39,3 +39,26 @@ def build_markdown_report(
     return output_path
 
 
+def consolidate_reports(source_dir: Path, summary_path: Path) -> Path:
+    source_dir.mkdir(parents=True, exist_ok=True)
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+
+    rows: list[str] = []
+    for report_file in sorted(source_dir.glob("*.md")):
+        if report_file.name == summary_path.name or report_file.name == "latest.md":
+            continue
+        rows.append(f"- [{report_file.name}]({report_file})")
+
+    content = "\n".join(
+        [
+            "# Resumen de pruebas WhatsApp",
+            "",
+            "Reportes disponibles:",
+            "",
+            *(rows or ["(Aún no se han ejecutado pruebas)"]),
+        ]
+    )
+    summary_path.write_text(content, encoding="utf-8")
+    return summary_path
+
+

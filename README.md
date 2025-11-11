@@ -45,7 +45,7 @@ terranote-tests/
 2. Añadir reportes (por ejemplo, salida en Markdown/HTML) para documentar los resultados.
 3. Integrar las suites con CI (opcionalmente) o documentar cómo ejecutarlas manualmente antes de releases.
 
-Los resultados se consolidan en `reports/whatsapp/latest.md`.
+Los resultados individuales se generan en `reports/whatsapp/`, y el resumen consolidado en `reports/whatsapp/summary.md`.
 
 ## Licencia
 
