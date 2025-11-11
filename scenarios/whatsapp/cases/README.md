@@ -8,6 +8,8 @@
   - Callback recibido por el adaptador (`note-created`) con la URL de la nota.
   - Contenido de la nota en OSM (fake o real) con texto y coordenadas correctas.
 
+Script sugerido: `scripts/test_text_location.py`
+
 ## Caso 2: Expiración por falta de ubicación
 
 - Enviar solo texto y no enviar ubicación.
