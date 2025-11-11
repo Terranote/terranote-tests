@@ -9,11 +9,20 @@ en WhatsApp Cloud API.
 from __future__ import annotations
 
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import httpx
+
+# Allow running the script directly.
+import sys
+
+ROOT = Path(__file__).resolve().parents[4]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools.reporting import CaseResult, build_markdown_report  # noqa: E402
 
 CORE_BASE_URL = os.environ.get("CORE_BASE_URL", "http://localhost:8000")
 ADAPTER_BASE_URL = os.environ.get("ADAPTER_BASE_URL", "http://localhost:8001")
@@ -57,8 +66,10 @@ def _fetch_latest_note() -> dict[str, Any]:
         return notes[-1]
 
 
-def _write_log(filename: str, content: str) -> None:
-    (LOG_DIR / filename).write_text(content, encoding="utf-8")
+def _write_log(filename: str, content: str) -> Path:
+    output_path = LOG_DIR / filename
+    output_path.write_text(content, encoding="utf-8")
+    return output_path
 
 
 def main() -> None:
@@ -169,10 +180,16 @@ def main() -> None:
         f"Nota:\n{latest_note}\n"
     )
     timestamp = datetime.now().isoformat()
-    _write_log(f"whatsapp_text_location_{timestamp}.log", log_content)
+    log_path = _write_log(f"whatsapp_text_location_{timestamp}.log", log_content)
+    report_path = build_markdown_report(
+        [CaseResult(name="Texto + ubicación", status="OK", details=str(log_path))],
+        output_dir=Path("reports/whatsapp"),
+        filename_prefix="whatsapp_text_location",
+    )
 
     print("✅ Caso texto + ubicación verificado correctamente.")
-    print(f"📄 Registro almacenado en {LOG_DIR}")
+    print(f"📄 Registro almacenado en {log_path}")
+    print(f"📝 Reporte: {report_path}")
 
 
 if __name__ == "__main__":

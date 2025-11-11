@@ -17,7 +17,7 @@ Suites de integración y end-to-end para el ecosistema Terranote.
 ## Estructura propuesta
 
 ```
-terrnote-tests/
+terranote-tests/
 ├── README.md
 ├── scenarios/
 │   ├── whatsapp/
@@ -45,9 +45,8 @@ terrnote-tests/
 2. Añadir reportes (por ejemplo, salida en Markdown/HTML) para documentar los resultados.
 3. Integrar las suites con CI (opcionalmente) o documentar cómo ejecutarlas manualmente antes de releases.
 
+Los resultados se consolidan en `reports/whatsapp/latest.md`.
+
 ## Licencia
 
 GPL-3.0-or-later.
-
-# terranote-tests
-Pruebas de integración entre componentes, pruebas de carga, etc.
