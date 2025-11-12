@@ -1,0 +1,11 @@
+# lychee configuration for Terranote Tests
+
+include_mail = false
+exclude = [
+  ".*/\\.venv/.*"
+]
+accept = [
+  "200..=399",
+  "403"
+]
+

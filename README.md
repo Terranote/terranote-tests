@@ -10,7 +10,7 @@ Suites de integración y end-to-end para el ecosistema Terranote.
 
 ## Repositorios relacionados
 
-- [`terrnote-core`](https://github.com/Terranote/terranote-core)
+- [`terranote-core`](https://github.com/Terranote/terranote-core)
 - [`terranote-adapter-whatsapp`](https://github.com/Terranote/terranote-adapter-whatsapp)
 - [`terranote-infra`](https://github.com/Terranote/terranote-infra) (compone el entorno Docker para pruebas E2E)
 

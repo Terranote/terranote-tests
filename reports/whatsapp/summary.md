@@ -2,4 +2,4 @@
 
 Reportes disponibles:
 
-- [README.md](reports/whatsapp/README.md)
+- [README.md](./README.md)
