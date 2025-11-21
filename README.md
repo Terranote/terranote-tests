@@ -14,7 +14,7 @@ Suites de integración y end-to-end para el ecosistema Terranote.
 - [`terranote-adapter-whatsapp`](https://github.com/Terranote/terranote-adapter-whatsapp)
 - [`terranote-infra`](https://github.com/Terranote/terranote-infra) (compone el entorno Docker para pruebas E2E)
 
-## Estructura propuesta
+## Estructura
 
 ```
 terranote-tests/
@@ -23,7 +23,9 @@ terranote-tests/
 │   ├── whatsapp/
 │   │   ├── cases/
 │   │   └── env/
-│   └── telegram/ (futuro)
+│   └── telegram/
+│       ├── cases/
+│       └── env/
 └── tools/ (utilidades comunes)
 ```
 
@@ -34,18 +36,31 @@ terranote-tests/
 ## Prerrequisitos
 
 - Clonar los repositorios mencionados dentro del mismo directorio base (ver README de `terranote-infra`).
-- Levantar el entorno con `docker compose` desde `terranote-infra/compose/<escenario>`.
-- Contar con las credenciales/tokens necesarios de WhatsApp Cloud API (o el canal que se esté probando).
+- Levantar el entorno con `docker compose` desde `terranote-infra/compose/<escenario>` (WhatsApp) o tener los servicios corriendo con systemd (Telegram).
+- Contar con las credenciales/tokens necesarios:
+  - WhatsApp Cloud API (para pruebas de WhatsApp)
+  - Telegram Bot Token (obtenido de @BotFather, para pruebas de Telegram)
+
+## Escenarios Disponibles
+
+### WhatsApp
+
+Suites de prueba para el adaptador de WhatsApp. Ver [`scenarios/whatsapp/cases/README.md`](scenarios/whatsapp/cases/README.md) para detalles.
+
+Los resultados se generan en `reports/whatsapp/`, y el resumen consolidado en `reports/whatsapp/summary.md`.
+
+### Telegram
+
+Suites de prueba para el adaptador de Telegram. Ver [`scenarios/telegram/cases/README.md`](scenarios/telegram/cases/README.md) para detalles.
+
+Los resultados se generan en `reports/telegram/`, y el resumen consolidado en `reports/telegram/summary.md`.
 
 ## Próximos pasos
 
-1. Crear la primera suite para WhatsApp que cubra:
-   - Mensaje de texto + ubicación → creación de nota → callback exitoso.
-   - Sesión que expira (falta de ubicación o texto) → mensajes al usuario.
-2. Añadir reportes (por ejemplo, salida en Markdown/HTML) para documentar los resultados.
-3. Integrar las suites con CI (opcionalmente) o documentar cómo ejecutarlas manualmente antes de releases.
-
-Los resultados individuales se generan en `reports/whatsapp/`, y el resumen consolidado en `reports/whatsapp/summary.md`.
+1. ✅ Crear la primera suite para WhatsApp
+2. ✅ Crear estructura de escenarios para Telegram
+3. ⏳ Implementar casos de prueba para Telegram
+4. Integrar las suites con CI (opcionalmente) o documentar cómo ejecutarlas manualmente antes de releases.
 
 ## Licencia
 

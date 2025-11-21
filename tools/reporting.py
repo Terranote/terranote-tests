@@ -41,7 +41,7 @@ def build_markdown_report(
     return output_path
 
 
-def consolidate_reports(source_dir: Path, summary_path: Path) -> Path:
+def consolidate_reports(source_dir: Path, summary_path: Path, title: str = "Resumen de pruebas") -> Path:
     source_dir.mkdir(parents=True, exist_ok=True)
     summary_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -53,7 +53,7 @@ def consolidate_reports(source_dir: Path, summary_path: Path) -> Path:
 
     content = "\n".join(
         [
-            "# Resumen de pruebas WhatsApp",
+            f"# {title}",
             "",
             "Reportes disponibles:",
             "",
